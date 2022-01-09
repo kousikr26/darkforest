@@ -1,0 +1,29 @@
+#!/bin/bash
+
+rm witness.wtns
+rm proof.json
+rm public.json
+
+
+# Check for correct number of arguments
+if [ $# -ne 2 ] && [ $# -ne 4 ]; then
+    echo "Usage:"
+    echo " ./spawn_player x y minDist maxDist"
+    exit 1
+fi
+
+# Generate input file
+echo "{\"x\": $1, \"y\": $2, \"minDist\": ${3:-32},\"maxDist\": ${4:-64}}" > ./input.json
+
+# Generate witness file
+circuit_cpp/circuit input.json witness.wtns
+
+# Generate a zero knowledge proof using the zkey and witness
+# This outputs a proof file and a public file containing public inputs and output
+snarkjs groth16 prove circuit_0001.zkey witness.wtns proof.json public.json
+
+# Use the verification key, proof and public file to verify if proof is valid
+snarkjs groth16 verify verification_key.json public.json proof.json
+
+# Generate and print parameters of call
+snarkjs generatecall | tee parameters.txt

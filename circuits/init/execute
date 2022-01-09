@@ -1,0 +1,64 @@
+#!/bin/bash
+
+rm circuit.rics
+rm circuit.sym
+rm circuit_*
+rm -r circuit_*
+rm pot*
+rm proof.json
+rm public.json
+rm verifier.sol
+rm verification_key.json
+rm witness.wtns
+
+# Compiles the circom circuit to get a system of arithmetic equations representing the circuit
+# --r1cs generates a file that contains the r1cs constraint system of circuit in binary format
+# --wasm generates wasm code that can be used to generate witness
+# --c generates c code that can be used to generate witness
+# --sym generates symbols file that can be used for debugging
+circom circuit.circom --r1cs --wasm --sym --c
+
+cd circuit_cpp
+
+# Make to compile the cpp code that generates witness
+make
+
+# Run the executable and generate the witness
+./circuit ../input.json witness.wtns
+
+cp witness.wtns ../witness.wtns
+cd ..
+
+# Use snarkjs to generate and validate a proof
+# The groth16 zk-snark protocol requires a trusted setup for each circuit which consists of
+# 1. Powers of tau
+
+# Create new powersoftau ceremony
+snarkjs powersoftau new bn128 12 pot12_0000.ptau -v
+
+# Contribute to the created ceremony
+snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="First contribution" -v -e="random text"
+
+# 2. Phase 2
+# Prepare for start of phase 2
+snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau -v
+
+# Generate zkey file that contains the proving and verification keys together with phase 2 contributions
+snarkjs groth16 setup circuit.r1cs pot12_final.ptau circuit_0000.zkey
+snarkjs zkey contribute circuit_0000.zkey circuit_0001.zkey --name="1st Contributor Name" -v -e="random text"
+
+# Export verification key to json file
+snarkjs zkey export verificationkey circuit_0001.zkey verification_key.json
+
+# Generate a zero knowledge proof using the zkey and witness
+# This outputs a proof file and a public file containing public inputs and outputs
+snarkjs groth16 prove circuit_0001.zkey witness.wtns proof.json public.json
+
+# Use the verification key, proof and public file to verify if proof is valid
+snarkjs groth16 verify verification_key.json public.json proof.json
+
+# Create a solidity verifier
+snarkjs zkey export solidityverifier circuit_0001.zkey ../../contracts/verifier.sol
+
+# Generate and print parameters of call
+snarkjs generatecall | tee parameters.txt
