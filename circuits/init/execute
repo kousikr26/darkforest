@@ -59,6 +59,6 @@ snarkjs groth16 verify verification_key.json public.json proof.json
 
 # Create a solidity verifier
 snarkjs zkey export solidityverifier circuit_0001.zkey ../../contracts/verifier.sol
-
+sed -i 's/0\.6\.11/0\.8\.10/g' ../../contracts/verifier.sol
 # Generate and print parameters of call
 snarkjs generatecall | tee parameters.txt
