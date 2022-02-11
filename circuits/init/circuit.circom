@@ -33,8 +33,7 @@ template IsPrimeGCD() {
 template Main() {
     signal input x;
     signal input y;
-    signal input minDist;
-    signal input maxDist;
+
 
     signal output h;
 
@@ -54,8 +53,8 @@ template Main() {
     signal minRSq;
     xSq <== x * x;
     ySq <== y * y;
-    maxRSq <== maxDist * maxDist;
-    minRSq <== minDist * minDist;
+    maxRSq <== 64 * 64;
+    minRSq <== 32 * 32;
 
     comp.in[0] <== xSq + ySq;
     comp.in[1] <== maxRSq;
@@ -75,4 +74,4 @@ template Main() {
     h <== mimc.outs[0];
 }
 
-component main {public [minDist, maxDist]} = Main();
+component main = Main();

@@ -12,16 +12,14 @@ template Main() {
     // New coordinates
     signal input x;
     signal input y;
-    // Auxiliary variables
-    signal input maxMovement;
-    signal input maxRadius;
+
     // Output hashes
     signal output newHash;
     signal output prevHash;
 
 
 
-    // check x^2 + y^2 < maxRadius^2 
+    // check x^2 + y^2 < 128^2 
     component comp = LessThan(64);
 
     signal xSq;
@@ -29,13 +27,13 @@ template Main() {
     signal maxRSq;
     xSq <== x * x;
     ySq <== y * y;
-    maxRSq <== maxRadius * maxRadius;
+    maxRSq <== 128 * 128;
 
     comp.in[0] <== xSq + ySq;
     comp.in[1] <== maxRSq + 1;
     comp.out === 1;
 
-    // Check if change in coordinates is less than maxMovement
+    // Check if change in coordinates is less than 16
     component comp2 = LessThan(64);    
     signal delXSq;
     signal delYSq;
@@ -43,7 +41,7 @@ template Main() {
     delYSq <== (y - prevY) * (y - prevY);
 
     comp2.in[0] <== delXSq + delYSq;
-    comp2.in[1] <== maxMovement * maxMovement + 1;
+    comp2.in[1] <== 16 * 16 + 1;
     comp2.out === 1;
 
 
@@ -64,4 +62,4 @@ template Main() {
 
 }
 
-component main {public [maxMovement, maxRadius]} = Main();
+component main = Main();

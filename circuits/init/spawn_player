@@ -6,14 +6,14 @@ rm public.json
 
 
 # Check for correct number of arguments
-if [ $# -ne 2 ] && [ $# -ne 4 ]; then
+if [ $# -ne 2 ]; then
     echo "Usage:"
-    echo " ./spawn_player x y minDist maxDist"
+    echo " ./spawn_player x y"
     exit 1
 fi
 
 # Generate input file
-echo "{\"x\": $1, \"y\": $2, \"minDist\": ${3:-32},\"maxDist\": ${4:-64}}" > ./input.json
+echo "{\"x\": $1, \"y\": $2}" > ./input.json
 
 # Generate witness file
 circuit_cpp/circuit input.json witness.wtns

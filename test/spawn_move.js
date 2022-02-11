@@ -1,18 +1,18 @@
 const Verifier = artifacts.require("Verifier");
-const GameState = artifacts.require("GameState");
+const DarkForest = artifacts.require("DarkForest");
 const MoveVerifier = artifacts.require("MoveVerifier");
 
-contract('GameState',() => {
+contract('DarkForest',() => {
 
 
     it("should deploy the contract", async () => {
         const verifier = await Verifier.new();
         const moveVerifier = await MoveVerifier.new();
-        const gameState = await GameState.new(verifier.address, moveVerifier.address);
+        const darkForest = await DarkForest.new(verifier.address, moveVerifier.address);
 
 
-        gameState = await GameState.deployed();
-        assert(gameState.address !== '');
+        darkForest = await DarkForest.deployed();
+        assert(darkForest.address !== '');
     });
 
 

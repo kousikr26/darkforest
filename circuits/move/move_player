@@ -6,14 +6,14 @@ rm public.json
 
 
 # Check for correct number of arguments
-if [ $# -ne 4 ] && [ $# -ne 6 ]; then
+if [ $# -ne 4 ]; then
     echo "Usage:"
-    echo " ./spawn_player prevX prevY x y maxMovement maxRadius"
+    echo " ./spawn_player prevX prevY x y"
     exit 1
 fi
 
 # Generate input file
-echo "{\"prevX\": $1, \"prevY\": $2, \"x\": $3, \"y\": $4, \"maxMovement\": ${5:-16},\"maxRadius\": ${6:-128}}" > ./input.json
+echo "{\"prevX\": $1, \"prevY\": $2, \"x\": $3, \"y\": $4}" > ./input.json
 
 # Generate witness file
 circuit_cpp/circuit input.json witness.wtns

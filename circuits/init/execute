@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm circuit.rics
+rm circuit.r1cs
 rm circuit.sym
 rm circuit_*
 rm -r circuit_*
@@ -10,6 +10,7 @@ rm public.json
 rm verifier.sol
 rm verification_key.json
 rm witness.wtns
+rm parameters.txt
 
 # Compiles the circom circuit to get a system of arithmetic equations representing the circuit
 # --r1cs generates a file that contains the r1cs constraint system of circuit in binary format
@@ -18,13 +19,25 @@ rm witness.wtns
 # --sym generates symbols file that can be used for debugging
 circom circuit.circom --r1cs --wasm --sym --c
 
-cd circuit_cpp
+if [[ $* == *--nodejs* ]]
+then
+    echo "Using nodejs"
+    cd circuit_js
+    node generate_witness.js circuit.wasm ../input.json witness.wtns
 
-# Make to compile the cpp code that generates witness
-make
+else
+    echo "Using cpp"
+    cd circuit_cpp
+    # Make to compile the cpp code that generates witness
+    make
 
-# Run the executable and generate the witness
-./circuit ../input.json witness.wtns
+    # Run the executable and generate the witness
+    ./circuit ../input.json witness.wtns
+fi
+
+
+
+
 
 cp witness.wtns ../witness.wtns
 cd ..
