@@ -19,7 +19,7 @@ template Main() {
 
 
 
-    // check x^2 + y^2 < 128^2 
+    // check x^2 + y^2 < 2048^2 
     component comp = LessThan(64);
 
     signal xSq;
@@ -27,7 +27,7 @@ template Main() {
     signal maxRSq;
     xSq <== x * x;
     ySq <== y * y;
-    maxRSq <== 128 * 128;
+    maxRSq <== 2048 * 2048;
 
     comp.in[0] <== xSq + ySq;
     comp.in[1] <== maxRSq + 1;

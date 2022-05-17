@@ -25,9 +25,6 @@ contract DarkForest {
     IVerifier verifier;
     IMoveVerifier move_verifier;
 
-    // Declare global variables
-    uint public minDist = 32;
-    uint public maxDist = 64;
 
     // Declare player counter that also acts as ID
     uint public num_players = 0;
